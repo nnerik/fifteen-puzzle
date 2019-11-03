@@ -1,0 +1,14 @@
+.Board {
+  fill: darkslategray;
+  stroke: lightgray;
+}
+
+.Piece {
+  fill: lightgray;
+  stroke: darkgray;
+}
+
+.PieceText {
+  fill: black;
+  font: bold 50px sans-serif;
+}
