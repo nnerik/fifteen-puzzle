@@ -4,15 +4,17 @@ import { newBoard, movePiece } from "./fifteen";
 import { Board } from "./Board";
 
 class App extends React.Component {
+  board = newBoard(4, 4);
   state = {
     width: 4,
     height: 4,
-    board: newBoard(4, 4)
+    board: this.board,
+    prevBoard: this.board
   };
 
   move = id => {
-    console.log(`Clicked piece ${id}.`);
     this.setState({
+      prevBoard: this.state.board,
       board: movePiece(
         this.state.board,
         this.state.width,
@@ -31,6 +33,7 @@ class App extends React.Component {
             width={this.state.width}
             height={this.state.height}
             board={this.state.board}
+            prevBoard={this.state.prevBoard}
             handler={this.move}
           />
         </header>

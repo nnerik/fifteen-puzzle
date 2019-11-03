@@ -6,31 +6,46 @@ const Piece = props => {
   return (
     <svg
       id={props.index}
-      onClick={() => props.handler(props.index)}
-      x={props.x * props.size}
-      y={props.y * props.size}
-      height={props.size}
-      width={props.size}
+      x={(props.x0 - 1) * props.size}
+      y={(props.y0 - 1) * props.size}
+      height={props.size * 3}
+      width={props.size * 3}
+      viewBox="0 0 300 300"
     >
-      <rect
-        className="Piece"
-        style={{
-          strokeWidth: "2%"
-        }}
-        x="2%"
-        y="2%"
-        width="96%"
-        height="96%"
-      ></rect>
-      <text
-        className="PieceText"
-        textAnchor="middle"
-        alignmentBaseline="central"
-        x="50%"
-        y="50%"
+      <g
+        className={
+          props.x < props.x0
+            ? "Left"
+            : props.x > props.x0
+            ? "Right"
+            : props.y < props.y0
+            ? "Up"
+            : props.y > props.y0
+            ? "Down"
+            : "Still"
+        }
+        onClick={() => props.handler(props.index)}
       >
-        {props.index}
-      </text>
+        <rect
+          className="Piece"
+          style={{
+            strokeWidth: 2
+          }}
+          x={102}
+          y={102}
+          width={96}
+          height={96}
+        ></rect>
+        <text
+          className="PieceText"
+          textAnchor="middle"
+          alignmentBaseline="central"
+          x={150}
+          y={150}
+        >
+          {props.index}
+        </text>
+      </g>
     </svg>
   );
 };
@@ -66,6 +81,8 @@ export const Board = props => {
               size={pieceSize}
               x={pos % props.width}
               y={(pos / props.width) | 0}
+              x0={props.prevBoard[index] % props.width}
+              y0={(props.prevBoard[index] / props.width) | 0}
               index={index}
               handler={props.handler}
             />
