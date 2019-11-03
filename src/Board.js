@@ -5,6 +5,8 @@ const Piece = props => {
   if (props.index === 0) return null;
   return (
     <svg
+      id={props.index}
+      onClick={() => props.handler(props.index)}
       x={props.x * props.size}
       y={props.y * props.size}
       height={props.size}
@@ -65,6 +67,7 @@ export const Board = props => {
               x={pos % props.width}
               y={(pos / props.width) | 0}
               index={index}
+              handler={props.handler}
             />
           );
         })}
