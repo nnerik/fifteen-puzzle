@@ -23,14 +23,35 @@
   transition: all 100ms linear;
 }
 
-.Piece {
+.Tile {
   fill: lightgray;
   stroke: darkgray;
 }
 
-.PieceText {
+.Solved rect {
+  animation: change-color 1000ms ease 2;
+}
+
+@keyframes change-color {
+  0% {
+    fill: lightgray;
+  }
+  50% {
+    fill: white;
+  }
+  100% {
+    fill: lightgray;
+  }
+}
+
+.Clickable rect:hover {
+  fill: rgb(228, 228, 228);
+}
+
+.TileText {
   fill: black;
   font: bold 50px sans-serif;
+  pointer-events: none;
 }
 
 svg text {

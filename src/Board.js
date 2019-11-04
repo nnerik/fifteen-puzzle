@@ -1,11 +1,13 @@
 import React from "react";
 import "./Board.css";
+import { isMoveable } from "./fifteen";
 
-const Piece = props => {
+const Tile = props => {
   if (props.index === 0) return null;
   return (
     <svg
       id={props.index}
+      className={props.solved ? "Solved" : "Unsolved"}
       x={(props.x0 - 1) * props.size}
       y={(props.y0 - 1) * props.size}
       height={props.size * 3}
@@ -14,7 +16,17 @@ const Piece = props => {
     >
       <g
         className={
-          props.x < props.x0
+          props.moveable
+            ? props.x < props.x0
+              ? "Clickable Left"
+              : props.x > props.x0
+              ? "Clickable Right"
+              : props.y < props.y0
+              ? "Clickable Up"
+              : props.y > props.y0
+              ? "Clickable Down"
+              : "Clickable"
+            : props.x < props.x0
             ? "Left"
             : props.x > props.x0
             ? "Right"
@@ -24,10 +36,10 @@ const Piece = props => {
             ? "Down"
             : "Still"
         }
-        onClick={() => props.handler(props.index)}
+        onClick={props.moveable ? () => props.handler(props.index) : undefined}
       >
         <rect
-          className="Piece"
+          className="Tile"
           style={{
             strokeWidth: 2
           }}
@@ -37,7 +49,7 @@ const Piece = props => {
           height={96}
         ></rect>
         <text
-          className="PieceText"
+          className="TileText"
           textAnchor="middle"
           alignmentBaseline="central"
           x={150}
@@ -51,13 +63,12 @@ const Piece = props => {
 };
 
 export const Board = props => {
-  const pieceSize = 100;
-  const boardStroke = 4;
+  const boardStroke = props.frameWidth;
 
   return (
     <svg
-      width={pieceSize * props.width + 2 * boardStroke}
-      height={pieceSize * props.height + 2 * boardStroke}
+      width={props.tileSize * props.width + 2 * boardStroke}
+      height={props.tileSize * props.height + 2 * boardStroke}
     >
       <rect
         className="Board"
@@ -66,24 +77,28 @@ export const Board = props => {
         }}
         x={boardStroke / 2}
         y={boardStroke / 2}
-        width={pieceSize * props.width + boardStroke}
-        height={pieceSize * props.height + boardStroke}
+        width={props.tileSize * props.width + boardStroke}
+        height={props.tileSize * props.height + boardStroke}
       />
       <svg
         x={boardStroke}
         y={boardStroke}
-        width={pieceSize * props.width}
-        height={pieceSize * props.height}
+        width={props.tileSize * props.width}
+        height={props.tileSize * props.height}
       >
-        {props.board.map((pos, index) => {
+        {props.board.map((tile, index) => {
           return (
-            <Piece
-              size={pieceSize}
-              x={pos % props.width}
-              y={(pos / props.width) | 0}
+            <Tile
+              size={props.tileSize}
+              x={tile % props.width}
+              y={(tile / props.width) | 0}
               x0={props.prevBoard[index] % props.width}
               y0={(props.prevBoard[index] / props.width) | 0}
               index={index}
+              solved={props.solved}
+              moveable={
+                !props.solved && isMoveable(props.board, props.width, index)
+              }
               handler={props.handler}
             />
           );
