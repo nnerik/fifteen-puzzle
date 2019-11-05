@@ -8,8 +8,8 @@ const Tile = props => {
     <svg
       id={props.index}
       className={props.solved ? "Solved" : "Unsolved"}
-      x={(props.x0 - 1) * props.size}
-      y={(props.y0 - 1) * props.size}
+      x={(props.x - 1) * props.size}
+      y={(props.y - 1) * props.size}
       height={props.size * 3}
       width={props.size * 3}
       viewBox="0 0 300 300"
@@ -45,6 +45,8 @@ const Tile = props => {
           }}
           x={102}
           y={102}
+          rx={3}
+          ry={3}
           width={96}
           height={96}
         ></rect>
@@ -77,6 +79,8 @@ export const Board = props => {
         }}
         x={boardStroke / 2}
         y={boardStroke / 2}
+        rx={3}
+        ry={3}
         width={props.tileSize * props.width + boardStroke}
         height={props.tileSize * props.height + boardStroke}
       />

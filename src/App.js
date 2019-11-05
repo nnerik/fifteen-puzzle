@@ -1,11 +1,17 @@
 import React from "react";
 import "./App.css";
-import { newBoard, solvedBoard, moveTile, isSolved } from "./fifteen";
+import {
+  newBoard,
+  solvedBoard,
+  moveTile,
+  isSolved,
+  getSolution
+} from "./fifteen";
 import { Board } from "./Board";
 
 class App extends React.Component {
-  initWidth = 4;
-  initHeight = 4;
+  initWidth = 3;
+  initHeight = 2;
   initBoard = solvedBoard(this.initWidth, this.initHeight);
   state = {
     width: this.initWidth,
@@ -35,8 +41,16 @@ class App extends React.Component {
     });
   };
 
+  solve = () => {
+    getSolution(this.state.board, this.state.width).forEach((id, index) => {
+      setTimeout(() => {
+        this.move(id);
+      }, 500 * index);
+    });
+  };
+
   render() {
-    const solved = isSolved(this.state.board);
+    const solved = isSolved(this.state.board, this.state.width);
     return (
       <div className="App">
         <header className="App-header">
@@ -55,9 +69,14 @@ class App extends React.Component {
           <p>
             Moves: {this.state.moves === 0 && solved ? "" : this.state.moves}
           </p>
-          <a className="App-link" onClick={this.shuffle}>
-            Shuffle
-          </a>
+          <p>
+            <button className="App-button" onClick={this.shuffle}>
+              Shuffle
+            </button>
+            <button className="App-button" onClick={this.solve}>
+              Solve
+            </button>
+          </p>
         </header>
       </div>
     );

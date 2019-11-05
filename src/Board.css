@@ -3,38 +3,19 @@
   stroke: lightgray;
 }
 
-.Down {
-  transform: translate(0, 100px);
-  transition: all 100ms linear;
-}
-
-.Up {
-  transform: translate(0, -100px);
-  transition: all 100ms linear;
-}
-
-.Right {
-  transform: translate(100px, 0);
-  transition: all 100ms linear;
-}
-
-.Left {
-  transform: translate(-100px, 0);
-  transition: all 100ms linear;
-}
-
 .Tile {
   fill: lightgray;
   stroke: darkgray;
+  transition-duration: 400ms;
 }
 
 .Solved rect {
-  animation: change-color 1000ms ease 2;
+  animation: change-color 1000ms ease-out;
 }
 
 @keyframes change-color {
   0% {
-    fill: lightgray;
+    fill: white;
   }
   50% {
     fill: white;
@@ -45,7 +26,7 @@
 }
 
 .Clickable rect:hover {
-  fill: rgb(228, 228, 228);
+  fill: rgb(224, 224, 224);
 }
 
 .TileText {
@@ -56,8 +37,57 @@
 
 svg text {
   cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
+}
+
+.Down {
+  animation: move-down 100ms ease;
+}
+
+@keyframes move-down {
+  0% {
+    transform: translate(0, -100px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.Up {
+  animation: move-up 100ms ease;
+}
+
+@keyframes move-up {
+  0% {
+    transform: translate(0, 100px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.Right {
+  animation: move-right 100ms ease;
+}
+
+@keyframes move-right {
+  0% {
+    transform: translate(-100px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.Left {
+  animation: move-left 100ms ease;
+}
+
+@keyframes move-left {
+  0% {
+    transform: translate(100px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }

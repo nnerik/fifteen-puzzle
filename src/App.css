@@ -10,9 +10,21 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: silver;
 }
 
-.App-link {
-  color: #09d3ac;
+.App-button {
+  background-color: lightgray;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  display: inline-block;
+  font-size: calc(10px + 2vmin);
+  margin: 15px;
+  transition-duration: 400ms;
+  border-radius: 3px;
+}
+
+.App-button:hover {
+  background-color: white;
 }
