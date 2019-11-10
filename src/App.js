@@ -22,14 +22,12 @@ class App extends React.Component {
   };
 
   move = id => {
-    const updatedBoard = moveTile(this.state.board, this.state.width, id);
-    if (updatedBoard) {
-      this.setState({
-        prevBoard: this.state.board,
-        board: updatedBoard,
-        moves: this.state.moves + 1
-      });
-    }
+    const updatedBoard = moveTile(this.state.board, id);
+    this.setState({
+      prevBoard: this.state.board,
+      board: updatedBoard,
+      moves: this.state.moves + 1
+    });
   };
 
   shuffle = id => {
@@ -45,7 +43,7 @@ class App extends React.Component {
     getSolution(this.state.board, this.state.width).forEach((id, index) => {
       setTimeout(() => {
         this.move(id);
-      }, 500 * index);
+      }, 150 * index);
     });
   };
 

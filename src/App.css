@@ -10,11 +10,11 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: silver;
+  color: darkturquoise;
 }
 
 .App-button {
-  background-color: lightgray;
+  background-color: darkturquoise;
   border: none;
   color: black;
   padding: 15px 32px;

@@ -1,11 +1,11 @@
 .Board {
   fill: darkslategray;
-  stroke: lightgray;
+  stroke: turquoise;
 }
 
 .Tile {
-  fill: lightgray;
-  stroke: darkgray;
+  fill: lemonchiffon;
+  stroke: lightgray;
   transition-duration: 400ms;
 }
 
@@ -21,12 +21,12 @@
     fill: white;
   }
   100% {
-    fill: lightgray;
+    fill: lemonchiffon;
   }
 }
 
 .Clickable rect:hover {
-  fill: rgb(224, 224, 224);
+  fill: white;
 }
 
 .TileText {
