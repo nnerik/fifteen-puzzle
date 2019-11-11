@@ -57,63 +57,40 @@ export const moveTile = (board, tile) => {
 };
 
 /*
- * Find shortest solution using A* and the Manhattan heuristic.
+ * Find shortest solution using A*.
  */
 
-export const getSolution = (start, width) => {
-  const searchDepth = 1000;
+const getExactSolution = (start, width) => {
+  // Define the heuristic to be applied
+  const heuristic = node => manhattan(node, width);
 
   // We need a priority queue for the A* algorithm
-  const isEmpty = pqueue => !("first" in pqueue);
-  const peek = pqueue => (isEmpty(pqueue) ? null : pqueue.first.value);
-  const peekPri = pqueue => (isEmpty(pqueue) ? null : pqueue.first.priority);
-  const pop = pqueue => ("rest" in pqueue ? pqueue.rest() : {});
+  let queue = [{ node: start, score: heuristic(start) }];
 
-  // Experimental tail recursive function
-  const tailPush = (pqueue, value, priority) => {
-    if (isEmpty(pqueue)) {
-      return { first: { value: value, priority: priority } };
-    } else if (priority <= peekPri(pqueue)) {
-      return {
-        first: { value: value, priority: priority },
-        rest: () => pqueue
-      };
-    } else {
-      return tailPush(
-        {
-          first: { value: value, priority: priority },
-          rest: () => pop(pop(pqueue))
-        },
-        peek(pop(pqueue)),
-        peekPri(pop(pqueue))
-      );
+  const isEmpty = pqueue => pqueue.length === 0;
+
+  const push = (pqueue, node, score) => {
+    let index = pqueue.length;
+    let parent = Math.trunc((index - 1) / 2);
+
+    pqueue.push({ node: node, score: score });
+
+    while (index > 0 && pqueue[index].score > pqueue[parent].score) {
+      const temp = pqueue[index];
+      pqueue[index] = pqueue[parent];
+      pqueue[parent] = temp;
+      index = parent;
+      parent = Math.trunc((index - 1) / 2);
     }
   };
 
-  const push = (pqueue, value, priority) => {
-    if (isEmpty(pqueue)) {
-      return { first: { value: value, priority: priority } };
-    } else if (priority < peekPri(pqueue)) {
-      return {
-        first: { value: value, priority: priority },
-        rest: () => pqueue
-      };
-    } else {
-      return {
-        first: pqueue.first,
-        rest: () => push(pop(pqueue), value, priority)
-      };
-    }
-  };
-
-  let queue = push({}, start, manhattan(start, width));
+  const pop = pqueue => pqueue.pop();
 
   // We also need a database for visited nodes
   let nodes = {};
 
-  const init_hScore = manhattan(start, width);
+  const init_hScore = heuristic(start);
   nodes[start] = {
-    fScore: init_hScore,
     gScore: 0,
     hScore: init_hScore,
     from: null
@@ -121,18 +98,17 @@ export const getSolution = (start, width) => {
 
   const saveNode = (node, fromNode) => {
     const gScore = nodes[fromNode].gScore + 1;
-    const hScore = manhattan(node, width);
+    const hScore = heuristic(node);
     nodes[node] = {
-      fScore: gScore + hScore,
       gScore: gScore,
       hScore: hScore,
       from: fromNode
     };
   };
 
-  const fScore = node => nodes[node].fScore;
   const gScore = node => nodes[node].gScore;
   const hScore = node => nodes[node].hScore;
+  const fScore = node => gScore(node) + hScore(node);
   const fromNode = node => nodes[node].from;
   const isVisited = node => node in nodes;
 
@@ -157,20 +133,26 @@ export const getSolution = (start, width) => {
 
   // Main A* loop
   while (!isEmpty(queue)) {
-    const current = peek(queue);
-    if (hScore(current) === 0 || hScore(current) <= init_hScore - searchDepth) {
+    const current = pop(queue).node;
+    if (hScore(current) === 0) {
       return reconstructPath(current);
     }
-
-    queue = pop(queue);
 
     for (const neighbor of neighbors(current)) {
       if (!isVisited(neighbor) || gScore(current) + 1 < gScore(neighbor)) {
         saveNode(neighbor, current);
-        queue = push(queue, neighbor, fScore(neighbor));
+        push(queue, neighbor, fScore(neighbor));
       }
     }
   }
   alert("No solution found!");
   return [];
+};
+
+export const getSolution = (start, width) => {
+  if (start.length < 12) {
+    return getExactSolution(start, width);
+  } else {
+    return [];
+  }
 };
