@@ -57,42 +57,74 @@ export const moveTile = (board, tile) => {
 };
 
 /*
+ * Helper functions
+ */
+
+const increasing = ([prev, ...rest]) => {
+  if (rest.length === 0) return true;
+  if (prev > rest[0]) return false;
+  return increasing(rest);
+};
+
+const partition = (list, n, acc = []) => {
+  if (list.length <= n) return acc.concat([list]);
+  return partition(list.slice(n), n, acc.concat([list.slice(0, n)]));
+};
+
+const transpose = matrix => matrix[0].map((_, i) => matrix.map(row => row[i]));
+
+const reversals = ([_, ...board], width) =>
+  partition(board, width)
+    .map((row, index) =>
+      row.filter(value => Math.trunc(value / width) === index)
+    )
+    .filter(seq => !increasing(seq)).length +
+  transpose(partition(board, width))
+    .map((row, index) => row.filter(value => value % width === index))
+    .filter(seq => !increasing(seq)).length;
+
+/*
+ * Prority queue implementation
+ */
+
+const isEmpty = pqueue => pqueue.length === 0;
+
+const push = (pqueue, node, score) => {
+  let index = pqueue.length;
+  let parent = Math.trunc((index - 1) / 2);
+
+  pqueue.push({ node: node, score: score });
+
+  while (index > 0 && pqueue[index].score > pqueue[parent].score) {
+    const temp = pqueue[index];
+    pqueue[index] = pqueue[parent];
+    pqueue[parent] = temp;
+    index = parent;
+    parent = Math.trunc((index - 1) / 2);
+  }
+};
+
+const pop = pqueue => pqueue.pop();
+/*
  * Find shortest solution using A*.
  */
 
-const getExactSolution = (start, width) => {
+export const getSolution = (start, width, interval) => {
+  // Record start time. We will return prematurely if it takes too long.
+  const timeLimit = new Date().getTime() + interval;
+
   // Define the heuristic to be applied
-  const heuristic = node => manhattan(node, width);
+  const heuristic = node => manhattan(node, width) + 2 * reversals(node, width);
 
   // We need a priority queue for the A* algorithm
-  let queue = [{ node: start, score: heuristic(start) }];
-
-  const isEmpty = pqueue => pqueue.length === 0;
-
-  const push = (pqueue, node, score) => {
-    let index = pqueue.length;
-    let parent = Math.trunc((index - 1) / 2);
-
-    pqueue.push({ node: node, score: score });
-
-    while (index > 0 && pqueue[index].score > pqueue[parent].score) {
-      const temp = pqueue[index];
-      pqueue[index] = pqueue[parent];
-      pqueue[parent] = temp;
-      index = parent;
-      parent = Math.trunc((index - 1) / 2);
-    }
-  };
-
-  const pop = pqueue => pqueue.pop();
+  let queue = [];
+  push(queue, start, heuristic(start));
 
   // We also need a database for visited nodes
   let nodes = {};
-
-  const init_hScore = heuristic(start);
   nodes[start] = {
     gScore: 0,
-    hScore: init_hScore,
+    hScore: heuristic(start),
     from: null
   };
 
@@ -136,6 +168,8 @@ const getExactSolution = (start, width) => {
     const current = pop(queue).node;
     if (hScore(current) === 0) {
       return reconstructPath(current);
+      // } else if (new Date().getTime() > timeLimit && current != start) {
+      //   return reconstructPath(current);
     }
 
     for (const neighbor of neighbors(current)) {
@@ -147,12 +181,4 @@ const getExactSolution = (start, width) => {
   }
   alert("No solution found!");
   return [];
-};
-
-export const getSolution = (start, width) => {
-  if (start.length < 12) {
-    return getExactSolution(start, width);
-  } else {
-    return [];
-  }
 };
