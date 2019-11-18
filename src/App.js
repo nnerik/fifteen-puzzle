@@ -11,7 +11,7 @@ import { Board } from "./Board";
 
 class App extends React.Component {
   initWidth = 3;
-  initHeight = 2;
+  initHeight = 3;
   initBoard = solvedBoard(this.initWidth, this.initHeight);
   state = {
     width: this.initWidth,
