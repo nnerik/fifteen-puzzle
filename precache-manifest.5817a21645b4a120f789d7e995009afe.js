@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "e2813849bdeba9795408193bcc247aa8",
+    "revision": "17973c3b527c10139306c2b1d294e91a",
     "url": "/fifteen-puzzle/index.html"
   },
   {
