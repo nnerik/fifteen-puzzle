@@ -6,7 +6,7 @@ import {
   moveTile,
   isSolved,
   getSolution
-} from "./fifteen";
+} from "fifteen-core";
 import { Board } from "./Board";
 
 class App extends React.Component {

@@ -1,6 +1,6 @@
 import React from "react";
 import "./Board.css";
-import { isMoveable } from "./fifteen";
+import { isMoveable } from "fifteen-core";
 
 const Tile = props => {
   if (props.index === 0) return null;
