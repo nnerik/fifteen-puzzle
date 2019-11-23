@@ -69,11 +69,12 @@ export const Board = props => {
 
   return (
     <svg
-      width={props.tileSize * props.width + 2 * boardStroke}
-      height={props.tileSize * props.height + 2 * boardStroke}
+      className="Board"
+      viewBox={`0 0 ${props.tileSize * props.width +
+        2 * boardStroke} ${props.tileSize * props.height + 2 * boardStroke}`}
     >
       <rect
-        className="Board"
+        className="Frame"
         style={{
           strokeWidth: boardStroke
         }}

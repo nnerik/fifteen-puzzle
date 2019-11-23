@@ -1,4 +1,9 @@
 .Board {
+  width: 40vh;
+  max-width: 95vw;
+}
+
+.Frame {
   fill: darkslategray;
   stroke: turquoise;
 }
