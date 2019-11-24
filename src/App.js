@@ -8,6 +8,17 @@ import {
   getSolution
 } from "fifteen-core";
 import { Board } from "./Board";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import {
+  CssBaseline,
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  Typography
+} from "@material-ui/core";
+import { cyan } from "@material-ui/core/colors";
+import "typeface-russo-one";
 
 class App extends React.Component {
   initWidth = 3;
@@ -20,6 +31,16 @@ class App extends React.Component {
     prevBoard: this.initBoard,
     moves: 0
   };
+
+  theme = createMuiTheme({
+    palette: {
+      type: "dark",
+      primary: cyan
+    },
+    typography: {
+      fontFamily: ["Russo One", "Sans Serif"]
+    }
+  });
 
   move = id => {
     const updatedBoard = moveTile(this.state.board, id);
@@ -50,9 +71,14 @@ class App extends React.Component {
   render() {
     const solved = isSolved(this.state.board, this.state.width);
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1>Fifteen</h1>
+      <ThemeProvider theme={this.theme}>
+        <CssBaseline />
+        <Container className="App">
+          <Box m={4}>
+            <Typography variant="h2" color="primary">
+              15 Fifteen
+            </Typography>
+          </Box>
           <Board
             tileSize={100}
             frameWidth={4}
@@ -64,19 +90,33 @@ class App extends React.Component {
             handler={this.move}
             solved={solved}
           />
-          <p>
-            Moves: {this.state.moves === 0 && solved ? "" : this.state.moves}
-          </p>
-          <p>
-            <button className="App-button" onClick={this.shuffle}>
-              Shuffle
-            </button>
-            <button className="App-button" onClick={this.solve}>
-              Solve
-            </button>
-          </p>
-        </header>
-      </div>
+          <Box m={1}>
+            <Typography variant="h5" color="primary">
+              Moves: {this.state.moves === 0 && solved ? "" : this.state.moves}
+            </Typography>
+          </Box>
+          <Box m={4}>
+            <ButtonGroup>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={this.shuffle}
+              >
+                Shuffle
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={this.solve}
+              >
+                Solve
+              </Button>
+            </ButtonGroup>
+          </Box>
+        </Container>
+      </ThemeProvider>
     );
   }
 }

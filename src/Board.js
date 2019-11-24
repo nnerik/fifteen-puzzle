@@ -1,6 +1,7 @@
 import React from "react";
 import "./Board.css";
 import { isMoveable } from "fifteen-core";
+import { Box, Paper } from "@material-ui/core";
 
 const Tile = props => {
   if (props.index === 0) return null;
@@ -84,6 +85,7 @@ export const Board = props => {
         ry={3}
         width={props.tileSize * props.width + boardStroke}
         height={props.tileSize * props.height + boardStroke}
+        fillOpacity={0}
       />
       <svg
         x={boardStroke}

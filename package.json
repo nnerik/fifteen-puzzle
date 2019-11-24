@@ -4,11 +4,13 @@
   "homepage": "https://nnerik.github.io/fifteen-puzzle",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.7.0",
     "fifteen-core": "github:nnerik/fifteen-core",
     "gh-pages": "^2.1.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "typeface-russo-one": "0.0.72"
   },
   "scripts": {
     "predeploy": "npm run build",

@@ -4,13 +4,12 @@
 }
 
 .Frame {
-  fill: darkslategray;
-  stroke: turquoise;
+  stroke: #00bcd4;
 }
 
 .Tile {
   fill: lemonchiffon;
-  stroke: lightgray;
+  stroke: rgb(218, 213, 172);
   transition-duration: 400ms;
 }
 
@@ -31,12 +30,12 @@
 }
 
 .Clickable rect:hover {
-  fill: white;
+  fill: rgb(218, 213, 172);
 }
 
 .TileText {
-  fill: black;
-  font: bold 50px sans-serif;
+  fill: darkslategray;
+  font: 50px Russo One;
   pointer-events: none;
 }
 
