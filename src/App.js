@@ -76,7 +76,7 @@ class App extends React.Component {
         <Container className="App">
           <Box m={4}>
             <Typography variant="h2" color="primary">
-              15 Fifteen
+              Fifteen
             </Typography>
           </Box>
           <Board
