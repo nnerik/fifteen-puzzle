@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.7.0",
+    "@material-ui/icons": "^4.5.1",
     "fifteen-core": "github:nnerik/fifteen-core",
     "gh-pages": "^2.1.1",
     "react": "^16.11.0",

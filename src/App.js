@@ -8,14 +8,19 @@ import {
   getSolution
 } from "fifteen-core";
 import { Board } from "./Board";
+import { Topbar } from "./Topbar";
+import { SettingsPopper } from "./Settings";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import {
   CssBaseline,
   Box,
   Button,
   ButtonGroup,
+  IconButton,
   Container,
-  Typography
+  Typography,
+  Popper,
+  Paper
 } from "@material-ui/core";
 import { cyan } from "@material-ui/core/colors";
 import "typeface-russo-one";
@@ -29,18 +34,24 @@ class App extends React.Component {
     height: this.initHeight,
     board: this.initBoard,
     prevBoard: this.initBoard,
-    moves: 0
+    moves: 0,
+    settings: false
   };
 
   theme = createMuiTheme({
     palette: {
       type: "dark",
-      primary: cyan
+      primary: cyan,
+      secondary: { main: "#fffacd" }
     },
     typography: {
       fontFamily: ["Russo One", "Sans Serif"]
     }
   });
+
+  toggleSettings = () => {
+    this.setState({ settings: !this.state.settings });
+  };
 
   move = id => {
     const updatedBoard = moveTile(this.state.board, id);
@@ -73,6 +84,7 @@ class App extends React.Component {
     return (
       <ThemeProvider theme={this.theme}>
         <CssBaseline />
+        <Topbar toggleSettings={this.toggleSettings} moves={this.state.moves} />
         <Container className="App">
           <Box m={4}>
             <Typography variant="h2" color="primary">
@@ -90,11 +102,6 @@ class App extends React.Component {
             handler={this.move}
             solved={solved}
           />
-          <Box m={1}>
-            <Typography variant="h5" color="primary">
-              Moves: {this.state.moves === 0 && solved ? "" : this.state.moves}
-            </Typography>
-          </Box>
           <Box m={4}>
             <ButtonGroup>
               <Button
@@ -116,6 +123,9 @@ class App extends React.Component {
             </ButtonGroup>
           </Box>
         </Container>
+        <Popper open={this.state.settings}>
+          <SettingsPopper rows={this.state.height} columns={this.state.width} />
+        </Popper>
       </ThemeProvider>
     );
   }

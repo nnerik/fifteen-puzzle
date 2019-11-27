@@ -9,7 +9,7 @@
 
 .Tile {
   fill: lemonchiffon;
-  stroke: rgb(218, 213, 172);
+  stroke: #dad5ac;
   transition-duration: 400ms;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .Clickable rect:hover {
-  fill: rgb(218, 213, 172);
+  fill: #dad5ac;
 }
 
 .TileText {
