@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import {
   newBoard,
@@ -9,36 +9,26 @@ import {
 } from "fifteen-core";
 import { Board } from "./Board";
 import { Topbar } from "./Topbar";
-import { SettingsPopper } from "./Settings";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import {
   CssBaseline,
   Box,
   Button,
   ButtonGroup,
-  IconButton,
   Container,
-  Typography,
-  Popper,
-  Paper
+  Typography
 } from "@material-ui/core";
 import { cyan } from "@material-ui/core/colors";
 import "typeface-russo-one";
 
-class App extends React.Component {
-  initWidth = 3;
-  initHeight = 3;
-  initBoard = solvedBoard(this.initWidth, this.initHeight);
-  state = {
-    width: this.initWidth,
-    height: this.initHeight,
-    board: this.initBoard,
-    prevBoard: this.initBoard,
-    moves: 0,
-    settings: false
-  };
+const App = () => {
+  const [width, setWidth] = useState(3);
+  const [height, setHeight] = useState(3);
+  const [board, setBoard] = useState(solvedBoard(width, height));
+  const [prevBoard, setPrevBoard] = useState(board);
+  const [moves, setMoves] = useState(0);
 
-  theme = createMuiTheme({
+  const theme = createMuiTheme({
     palette: {
       type: "dark",
       primary: cyan,
@@ -49,86 +39,80 @@ class App extends React.Component {
     }
   });
 
-  toggleSettings = () => {
-    this.setState({ settings: !this.state.settings });
+  const move = id => {
+    const updatedBoard = moveTile(board, id);
+    setPrevBoard(board);
+    setBoard(updatedBoard);
+    setMoves(moves + 1);
   };
 
-  move = id => {
-    const updatedBoard = moveTile(this.state.board, id);
-    this.setState({
-      prevBoard: this.state.board,
-      board: updatedBoard,
-      moves: this.state.moves + 1
-    });
+  const resize = (width, height) => {
+    const updatedBoard = solvedBoard(width, height);
+    setPrevBoard(updatedBoard);
+    setBoard(updatedBoard);
+    setMoves(0);
   };
 
-  shuffle = id => {
-    const board = newBoard(this.state.width, this.state.height);
-    this.setState({
-      board: board,
-      prevBoard: board,
-      moves: 0
-    });
+  const shuffle = () => {
+    setBoard(newBoard(width, height));
+    setPrevBoard(board);
+    setMoves(0);
   };
 
-  solve = () => {
-    getSolution(this.state.board, this.state.width).forEach((id, index) => {
+  const solve = () => {
+    getSolution(board, width).forEach((id, index) => {
       setTimeout(() => {
-        this.move(id);
+        move(id);
       }, 150 * index);
     });
   };
 
-  render() {
-    const solved = isSolved(this.state.board, this.state.width);
-    return (
-      <ThemeProvider theme={this.theme}>
-        <CssBaseline />
-        <Topbar toggleSettings={this.toggleSettings} moves={this.state.moves} />
-        <Container className="App">
-          <Box m={4}>
-            <Typography variant="h2" color="primary">
-              Fifteen
-            </Typography>
-          </Box>
-          <Board
-            tileSize={100}
-            frameWidth={4}
-            moves={this.moves}
-            width={this.state.width}
-            height={this.state.height}
-            board={this.state.board}
-            prevBoard={this.state.prevBoard}
-            handler={this.move}
-            solved={solved}
-          />
-          <Box m={4}>
-            <ButtonGroup>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={this.shuffle}
-              >
-                Shuffle
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={this.solve}
-              >
-                Solve
-              </Button>
-            </ButtonGroup>
-          </Box>
-        </Container>
-        <Popper open={this.state.settings}>
-          <SettingsPopper rows={this.state.height} columns={this.state.width} />
-        </Popper>
-      </ThemeProvider>
-    );
-  }
-}
+  const solved = isSolved(board, width);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Topbar moves={moves} rows={height} columns={width} resize={resize} />
+      <Container className="App">
+        <Box m={4}>
+          <Typography variant="h2" color="primary">
+            Fifteen
+          </Typography>
+        </Box>
+        <Board
+          tileSize={100}
+          frameWidth={4}
+          moves={moves}
+          width={width}
+          height={height}
+          board={board}
+          prevBoard={prevBoard}
+          handler={move}
+          solved={solved}
+        />
+        <Box m={4}>
+          <ButtonGroup>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={shuffle}
+            >
+              Shuffle
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={solve}
+            >
+              Solve
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
+};
 
 export default App;

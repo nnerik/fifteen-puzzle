@@ -1,7 +1,6 @@
 import React from "react";
 import "./Board.css";
 import { isMoveable } from "fifteen-core";
-import { Box, Paper } from "@material-ui/core";
 
 const Tile = props => {
   if (props.index === 0) return null;
