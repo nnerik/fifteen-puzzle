@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import {
-  newBoard,
-  solvedBoard,
-  moveTile,
-  isSolved,
-  getSolution
-} from "fifteen-core";
+import { newBoard, solvedBoard, moveTile, getSolution } from "./fifteen";
 import { Board } from "./Board";
 import { Topbar } from "./Topbar";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
@@ -22,11 +16,11 @@ import { cyan } from "@material-ui/core/colors";
 import "typeface-russo-one";
 
 const App = () => {
-  const [width, setWidth] = useState(3);
-  const [height, setHeight] = useState(3);
-  const [board, setBoard] = useState(solvedBoard(width, height));
-  const [prevBoard, setPrevBoard] = useState(board);
-  const [moves, setMoves] = useState(0);
+  const [gameState, setGameState] = useState({
+    board: solvedBoard(3, 3),
+    prevBoard: solvedBoard(3, 3),
+    moves: 0
+  });
 
   const theme = createMuiTheme({
     palette: {
@@ -39,40 +33,43 @@ const App = () => {
     }
   });
 
-  const move = id => {
-    const updatedBoard = moveTile(board, id);
-    setPrevBoard(board);
-    setBoard(updatedBoard);
-    setMoves(moves + 1);
+  const resize = (width, height) => {
+    const newBoard = solvedBoard(width, height);
+    setGameState({ board: newBoard, prevBoard: newBoard, moves: 0 });
   };
 
-  const resize = (width, height) => {
-    const updatedBoard = solvedBoard(width, height);
-    setPrevBoard(updatedBoard);
-    setBoard(updatedBoard);
-    setMoves(0);
+  const move = id => {
+    setGameState({
+      prevBoard: gameState.board,
+      board: moveTile(gameState.board, id),
+      moves: gameState.moves + 1
+    });
   };
 
   const shuffle = () => {
-    setBoard(newBoard(width, height));
-    setPrevBoard(board);
-    setMoves(0);
+    const shuffledBoard = newBoard(
+      gameState.board.width,
+      gameState.board.height
+    );
+    setGameState({
+      prevBoard: shuffledBoard,
+      board: shuffledBoard,
+      moves: 0
+    });
   };
 
   const solve = () => {
-    getSolution(board, width).forEach((id, index) => {
+    getSolution(gameState.board).forEach((id, index) => {
       setTimeout(() => {
         move(id);
       }, 150 * index);
     });
   };
 
-  const solved = isSolved(board, width);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Topbar moves={moves} rows={height} columns={width} resize={resize} />
+      <Topbar gameState={gameState} resize={resize} />
       <Container className="App">
         <Box m={4}>
           <Typography variant="h2" color="primary">
@@ -82,13 +79,8 @@ const App = () => {
         <Board
           tileSize={100}
           frameWidth={4}
-          moves={moves}
-          width={width}
-          height={height}
-          board={board}
-          prevBoard={prevBoard}
+          gameState={gameState}
           handler={move}
-          solved={solved}
         />
         <Box m={4}>
           <ButtonGroup>

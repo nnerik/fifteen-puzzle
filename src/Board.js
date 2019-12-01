@@ -1,12 +1,11 @@
 import React from "react";
 import "./Board.css";
-import { isMoveable } from "fifteen-core";
+import { isMoveable, isSolved } from "./fifteen";
 
 const Tile = props => {
   if (props.index === 0) return null;
   return (
     <svg
-      id={props.index}
       className={props.solved ? "Solved" : "Unsolved"}
       x={(props.x - 1) * props.size}
       y={(props.y - 1) * props.size}
@@ -66,12 +65,14 @@ const Tile = props => {
 
 export const Board = props => {
   const boardStroke = props.frameWidth;
+  const solved = isSolved(props.gameState.board);
 
   return (
     <svg
       className="Board"
-      viewBox={`0 0 ${props.tileSize * props.width +
-        2 * boardStroke} ${props.tileSize * props.height + 2 * boardStroke}`}
+      viewBox={`0 0 ${props.tileSize * props.gameState.board.width +
+        2 * boardStroke} ${props.tileSize * props.gameState.board.height +
+        2 * boardStroke}`}
     >
       <rect
         className="Frame"
@@ -82,29 +83,35 @@ export const Board = props => {
         y={boardStroke / 2}
         rx={3}
         ry={3}
-        width={props.tileSize * props.width + boardStroke}
-        height={props.tileSize * props.height + boardStroke}
+        width={props.tileSize * props.gameState.board.width + boardStroke}
+        height={props.tileSize * props.gameState.board.height + boardStroke}
         fillOpacity={0}
       />
       <svg
         x={boardStroke}
         y={boardStroke}
-        width={props.tileSize * props.width}
-        height={props.tileSize * props.height}
+        width={props.tileSize * props.gameState.board.width}
+        height={props.tileSize * props.gameState.board.height}
       >
-        {props.board.map((tile, index) => {
+        {props.gameState.board.state.map((tile, index) => {
           return (
             <Tile
+              key={index}
               size={props.tileSize}
-              x={tile % props.width}
-              y={(tile / props.width) | 0}
-              x0={props.prevBoard[index] % props.width}
-              y0={(props.prevBoard[index] / props.width) | 0}
-              index={index}
-              solved={props.solved}
-              moveable={
-                !props.solved && isMoveable(props.board, props.width, index)
+              x={tile % props.gameState.board.width}
+              y={(tile / props.gameState.board.width) | 0}
+              x0={
+                props.gameState.prevBoard.state[index] %
+                props.gameState.board.width
               }
+              y0={
+                (props.gameState.prevBoard.state[index] /
+                  props.gameState.board.width) |
+                0
+              }
+              index={index}
+              solved={solved}
+              moveable={!solved && isMoveable(props.gameState.board, index)}
               handler={props.handler}
             />
           );

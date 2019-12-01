@@ -28,18 +28,18 @@ const useStyles = makeStyles(theme => ({
 
 export const Topbar = props => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = event => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
   const handleRows = (_, value) => {
-    props.resize(props.columns, value);
+    props.resize(props.gameState.board.width, value);
   };
 
   const handleColumns = (_, value) => {
-    props.resize(value, props.rows);
+    props.resize(value, props.gameState.board.height);
   };
 
   const open = Boolean(anchorEl);
@@ -50,7 +50,7 @@ export const Topbar = props => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Moves: {props.moves}
+            Moves: {props.gameState.moves}
           </Typography>
           <IconButton color="inherit" onClick={handleClick}>
             <Settings />
@@ -61,7 +61,7 @@ export const Topbar = props => {
         <div className={classes.settings}>
           <Typography gutterBottom>Rows</Typography>
           <Slider
-            value={props.rows}
+            value={props.gameState.board.height}
             onChange={handleRows}
             aria-labelledby="rows-slider"
             valueLabelDisplay="auto"
@@ -72,7 +72,7 @@ export const Topbar = props => {
           />
           <Typography gutterBottom>Columns</Typography>
           <Slider
-            value={props.columns}
+            value={props.gameState.board.width}
             onChange={handleColumns}
             aria-labelledby="columns-slider"
             valueLabelDisplay="auto"
