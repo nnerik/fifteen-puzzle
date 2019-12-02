@@ -6,7 +6,8 @@ import {
   Typography,
   IconButton,
   Popper,
-  Slider
+  Slider,
+  ClickAwayListener
 } from "@material-ui/core";
 import { Settings } from "@material-ui/icons/";
 
@@ -34,6 +35,10 @@ export const Topbar = props => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
+  const handleClickAway = event => {
+    setAnchorEl(null);
+  };
+
   const handleRows = (_, value) => {
     props.resize(props.gameState.board.width, value);
   };
@@ -52,9 +57,11 @@ export const Topbar = props => {
           <Typography variant="h6" className={classes.title}>
             Moves: {props.gameState.moves}
           </Typography>
-          <IconButton color="inherit" onClick={handleClick}>
-            <Settings />
-          </IconButton>
+          <ClickAwayListener onClickAway={handleClickAway}>
+            <IconButton color="inherit" onClick={handleClick}>
+              <Settings />
+            </IconButton>
+          </ClickAwayListener>
         </Toolbar>
       </AppBar>
       <Popper id={id} open={open} anchorEl={anchorEl}>

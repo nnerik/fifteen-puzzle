@@ -59,11 +59,12 @@ const App = () => {
   };
 
   const solve = () => {
-    getSolution(gameState.board).forEach((id, index) => {
-      setTimeout(() => {
-        move(id);
-      }, 150 * index);
-    });
+    const solution = getSolution(gameState.board);
+    if (solution.length === 0) alert("No solution found!");
+    else
+      solution.forEach((id, index) => {
+        setTimeout(() => move(id), 150 * index);
+      });
   };
 
   return (
