@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5eea2f94ffbee6d1947c2c88bd93ff98",
+    "revision": "b199f0e13fc3b32e0450168e4c67644e",
     "url": "/fifteen-puzzle/index.html"
   },
   {
-    "revision": "f2bd7816377140826910",
+    "revision": "133517a07de6e5d1ffc5",
     "url": "/fifteen-puzzle/static/css/2.07492a0e.chunk.css"
   },
   {
-    "revision": "59a2b8ee8ebf75705ade",
-    "url": "/fifteen-puzzle/static/css/main.2147aea7.chunk.css"
+    "revision": "3ccf237a3a7c78fca873",
+    "url": "/fifteen-puzzle/static/css/main.0f57f228.chunk.css"
   },
   {
-    "revision": "f2bd7816377140826910",
-    "url": "/fifteen-puzzle/static/js/2.103bae43.chunk.js"
+    "revision": "133517a07de6e5d1ffc5",
+    "url": "/fifteen-puzzle/static/js/2.7dd67293.chunk.js"
   },
   {
-    "revision": "59a2b8ee8ebf75705ade",
-    "url": "/fifteen-puzzle/static/js/main.68281b67.chunk.js"
+    "revision": "3ccf237a3a7c78fca873",
+    "url": "/fifteen-puzzle/static/js/main.9227621c.chunk.js"
   },
   {
     "revision": "b58ea441a187dceb460a",
