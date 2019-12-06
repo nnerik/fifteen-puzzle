@@ -58,12 +58,21 @@ const App = () => {
     });
   };
 
+  const solutionReducer = (acc, id) => {
+    const prev = acc[acc.length - 1];
+    return acc.concat({
+      prevBoard: prev.board,
+      board: moveTile(prev.board, id),
+      moves: prev.moves + 1
+    });
+  };
+
   const solve = () => {
     const solution = getSolution(gameState.board);
     if (solution.length === 0) alert("No solution found!");
     else
-      solution.forEach((id, index) => {
-        setTimeout(() => move(id), 150 * index);
+      solution.reduce(solutionReducer, [gameState]).forEach((state, index) => {
+        setTimeout(() => setGameState(state), 150 * index);
       });
   };
 
