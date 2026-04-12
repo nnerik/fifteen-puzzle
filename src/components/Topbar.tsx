@@ -15,6 +15,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import type { GameState } from "../game/puzzle";
 
 type TopbarProps = {
+  disabled?: boolean;
   gameState: GameState;
   resize: (width: number, height: number) => void;
 };
@@ -48,56 +49,65 @@ export const Topbar = (props: TopbarProps) => {
   const id = open ? "settings" : undefined;
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="primary" enableColorOnDark>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Moves: {props.gameState.moves}
-          </Typography>
-          <ClickAwayListener onClickAway={handleClickAway}>
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static" color="primary" enableColorOnDark>
+          <Toolbar>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Moves: {props.gameState.moves}
+            </Typography>
             <IconButton
+              aria-controls={id}
+              aria-expanded={open}
               color="inherit"
+              disabled={props.disabled}
               onClick={handleClick}
               aria-label="settings"
             >
               <SettingsIcon />
             </IconButton>
-          </ClickAwayListener>
-        </Toolbar>
-      </AppBar>
-      <Popper id={id} open={open} anchorEl={anchorEl}>
-        <Box
-          sx={(theme) => ({
-            width: 300,
-            border: "1px solid",
-            p: 1,
-            bgcolor: theme.palette.background.paper,
-          })}
-        >
-          <Typography gutterBottom>Rows</Typography>
-          <Slider
-            value={props.gameState.board.height}
-            onChange={handleRows}
-            aria-labelledby="rows-slider"
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={2}
-            max={6}
-          />
-          <Typography gutterBottom>Columns</Typography>
-          <Slider
-            value={props.gameState.board.width}
-            onChange={handleColumns}
-            aria-labelledby="columns-slider"
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={2}
-            max={6}
-          />
-        </Box>
-      </Popper>
-    </Box>
+          </Toolbar>
+        </AppBar>
+        <Popper id={id} open={open} anchorEl={anchorEl}>
+          <Box
+            sx={(theme) => ({
+              width: 300,
+              border: "1px solid",
+              p: 1,
+              bgcolor: theme.palette.background.paper,
+            })}
+          >
+            <Typography id="rows-slider" gutterBottom>
+              Rows
+            </Typography>
+            <Slider
+              value={props.gameState.board.height}
+              onChange={handleRows}
+              aria-labelledby="rows-slider"
+              disabled={props.disabled}
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={2}
+              max={6}
+            />
+            <Typography id="columns-slider" gutterBottom>
+              Columns
+            </Typography>
+            <Slider
+              value={props.gameState.board.width}
+              onChange={handleColumns}
+              aria-labelledby="columns-slider"
+              disabled={props.disabled}
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={2}
+              max={6}
+            />
+          </Box>
+        </Popper>
+      </Box>
+    </ClickAwayListener>
   );
 };

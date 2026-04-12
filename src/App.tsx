@@ -1,13 +1,4 @@
-import { useMemo, useState } from "react";
 import "./App.css";
-import {
-  createGameState,
-  createShuffledBoard,
-  createSolvedBoard,
-  moveTile,
-  type GameState,
-} from "./game/puzzle";
-import { getSolution } from "./game/solver";
 import { Board } from "./components/Board";
 import { Topbar } from "./components/Topbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -21,92 +12,34 @@ import {
 } from "@mui/material";
 import { cyan } from "@mui/material/colors";
 import "@fontsource/russo-one";
+import { usePuzzleGame } from "./game/usePuzzleGame";
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: cyan[500],
+      contrastText: "#000",
+    },
+    background: {
+      default: "#303030",
+    },
+    secondary: { main: "#fffacd" },
+  },
+  typography: {
+    fontFamily: ['"Russo One"', "sans-serif"].join(","),
+  },
+});
 
 /** Main Fifteen Puzzle application shell and game controller. */
 const App = () => {
-  const [gameState, setGameState] = useState<GameState>(() =>
-    createGameState(),
-  );
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: "dark",
-          primary: {
-            main: cyan[500],
-            contrastText: "#000",
-          },
-          background: {
-            default: "#303030",
-          },
-          secondary: { main: "#fffacd" },
-        },
-        typography: {
-          fontFamily: ['"Russo One"', "sans-serif"].join(","),
-        },
-      }),
-    [],
-  );
-
-  const resize = (width: number, height: number) => {
-    const board = createSolvedBoard(width, height);
-    setGameState({ board, previousBoard: board, moves: 0 });
-  };
-
-  const move = (tile: number) => {
-    setGameState({
-      previousBoard: gameState.board,
-      board: moveTile(gameState.board, tile),
-      moves: gameState.moves + 1,
-    });
-  };
-
-  const shuffle = () => {
-    const shuffledBoard = createShuffledBoard(
-      gameState.board.width,
-      gameState.board.height,
-    );
-    setGameState({
-      previousBoard: shuffledBoard,
-      board: shuffledBoard,
-      moves: 0,
-    });
-  };
-
-  const solutionReducer = (acc: GameState[], tile: number) => {
-    const prev = acc[acc.length - 1];
-
-    if (prev === undefined) {
-      return acc;
-    }
-
-    return acc.concat({
-      previousBoard: prev.board,
-      board: moveTile(prev.board, tile),
-      moves: prev.moves + 1,
-    });
-  };
-
-  const solve = () => {
-    const solution = getSolution(gameState.board);
-
-    if (solution.length === 0) {
-      alert("No solution found!");
-      return;
-    }
-
-    // Build the intermediate game states first so each timeout displays the
-    // same board sequence even though React state updates are asynchronous.
-    solution.reduce(solutionReducer, [gameState]).forEach((state, index) => {
-      setTimeout(() => setGameState(state), 150 * index);
-    });
-  };
+  const { gameState, isReplaying, move, resize, shuffle, solve } =
+    usePuzzleGame();
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Topbar gameState={gameState} resize={resize} />
+      <Topbar disabled={isReplaying} gameState={gameState} resize={resize} />
       <Container className="App">
         <Box sx={{ m: 4 }}>
           <Typography variant="h2" color="primary">
@@ -117,6 +50,7 @@ const App = () => {
           tileSize={100}
           frameWidth={4}
           gameState={gameState}
+          isDisabled={isReplaying}
           onMove={move}
         />
         <Box sx={{ m: 4 }}>
@@ -124,6 +58,7 @@ const App = () => {
             <Button
               variant="contained"
               color="primary"
+              disabled={isReplaying}
               size="large"
               onClick={shuffle}
             >
@@ -132,6 +67,7 @@ const App = () => {
             <Button
               variant="contained"
               color="primary"
+              disabled={isReplaying}
               size="large"
               onClick={solve}
             >

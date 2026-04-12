@@ -118,7 +118,11 @@ export const moveTile = (board: Board, tile: number): Board => {
   const blankPosition = board.state[0];
   const tilePosition = board.state[tile];
 
-  if (blankPosition === undefined || tilePosition === undefined) {
+  if (
+    blankPosition === undefined ||
+    tilePosition === undefined ||
+    getTileDistance(blankPosition, tilePosition, board.width) !== 1
+  ) {
     return board;
   }
 

@@ -1,4 +1,5 @@
 import "./Board.css";
+import type { CSSProperties, KeyboardEvent } from "react";
 import { isMovable, isSolved, type GameState } from "../game/puzzle";
 
 type TileProps = {
@@ -16,6 +17,7 @@ type TileProps = {
 type BoardProps = {
   frameWidth: number;
   gameState: GameState;
+  isDisabled?: boolean;
   onMove: (tile: number) => void;
   tileSize: number;
 };
@@ -43,6 +45,15 @@ const Tile = (props: TileProps) => {
     return null;
   }
 
+  const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    props.onMove(props.index);
+  };
+
   return (
     <svg
       className={props.isSolved ? "Solved" : "Unsolved"}
@@ -53,8 +64,12 @@ const Tile = (props: TileProps) => {
       viewBox="0 0 300 300"
     >
       <g
+        aria-label={props.isMovable ? `Move tile ${props.index}` : undefined}
         className={tileStateClassName(props)}
+        onKeyDown={props.isMovable ? handleKeyDown : undefined}
         onClick={props.isMovable ? () => props.onMove(props.index) : undefined}
+        role={props.isMovable ? "button" : undefined}
+        tabIndex={props.isMovable ? 0 : undefined}
       >
         <rect
           className="Tile"
@@ -89,7 +104,10 @@ export const Board = (props: BoardProps) => {
 
   return (
     <svg
+      aria-label="Sliding puzzle board"
       className="Board"
+      role="group"
+      style={{ "--tile-size": `${props.tileSize}px` } as CSSProperties}
       viewBox={`0 0 ${boardWidth + 2 * boardStroke} ${boardHeight + 2 * boardStroke}`}
     >
       <rect
@@ -124,7 +142,11 @@ export const Board = (props: BoardProps) => {
               previousY={(previousTile / props.gameState.board.width) | 0}
               index={index}
               isSolved={solved}
-              isMovable={!solved && isMovable(props.gameState.board, index)}
+              isMovable={
+                !props.isDisabled &&
+                !solved &&
+                isMovable(props.gameState.board, index)
+              }
               onMove={props.onMove}
             />
           );

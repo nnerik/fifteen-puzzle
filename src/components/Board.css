@@ -54,7 +54,7 @@ svg text {
 
 @keyframes move-down {
   0% {
-    transform: translate(0, -100px);
+    transform: translate(0, calc(-1 * var(--tile-size)));
   }
 
   100% {
@@ -68,7 +68,7 @@ svg text {
 
 @keyframes move-up {
   0% {
-    transform: translate(0, 100px);
+    transform: translate(0, var(--tile-size));
   }
 
   100% {
@@ -82,7 +82,7 @@ svg text {
 
 @keyframes move-right {
   0% {
-    transform: translate(-100px, 0);
+    transform: translate(calc(-1 * var(--tile-size)), 0);
   }
 
   100% {
@@ -96,7 +96,7 @@ svg text {
 
 @keyframes move-left {
   0% {
-    transform: translate(100px, 0);
+    transform: translate(var(--tile-size), 0);
   }
 
   100% {

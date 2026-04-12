@@ -19,6 +19,20 @@ export type SolverOptions = {
   weight?: number;
 };
 
+export type Solution =
+  | {
+      status: "already-solved";
+      moves: [];
+    }
+  | {
+      status: "found";
+      moves: number[];
+    }
+  | {
+      status: "limit-reached";
+      moves: [];
+    };
+
 const defaultOptions = {
   maxExpandedNodes: 250_000,
   weight: 1.5,
@@ -242,14 +256,15 @@ const reconstructPath = (
 
 /**
  * Finds a move sequence that solves the board using weighted A* search.
- *
- * Returns an empty array when the board is already solved or the expansion
- * limit is reached before a solution is found.
  */
 export const getSolution = (
   start: Board,
   options: SolverOptions = {},
-): number[] => {
+): Solution => {
+  if (isSolved(start)) {
+    return { status: "already-solved", moves: [] };
+  }
+
   const maxExpandedNodes =
     options.maxExpandedNodes ?? defaultOptions.maxExpandedNodes;
   const weight = options.weight ?? defaultOptions.weight;
@@ -289,7 +304,10 @@ export const getSolution = (
     }
 
     if (isSolved(current.board)) {
-      return reconstructPath(current.board, visited);
+      return {
+        status: "found",
+        moves: reconstructPath(current.board, visited),
+      };
     }
 
     expandedNodes += 1;
@@ -315,5 +333,5 @@ export const getSolution = (
     }
   }
 
-  return [];
+  return { status: "limit-reached", moves: [] };
 };

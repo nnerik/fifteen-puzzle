@@ -22,35 +22,43 @@ const scramble = (
 
 describe("getSolution", () => {
   it("returns no moves for a solved board", () => {
-    expect(getSolution(createSolvedBoard(3, 3))).toEqual([]);
+    expect(getSolution(createSolvedBoard(3, 3))).toEqual({
+      status: "already-solved",
+      moves: [],
+    });
   });
 
   it("solves a board that is one move away", () => {
     const board = scramble(3, 3, [7]);
 
-    expect(getSolution(board)).toEqual([8]);
+    expect(getSolution(board)).toEqual({ status: "found", moves: [8] });
   });
 
   it("returns a valid solution for a scrambled 3x3 board", () => {
     const board = scramble(3, 3, [7, 6, 3, 4, 5, 2, 1, 0, 3, 4]);
     const solution = getSolution(board);
 
-    expect(solution.length).toBeGreaterThan(0);
-    expect(isSolved(applyMoves(board, solution))).toBe(true);
+    expect(solution.status).toBe("found");
+    expect(solution.moves.length).toBeGreaterThan(0);
+    expect(isSolved(applyMoves(board, solution.moves))).toBe(true);
   });
 
   it("returns a valid solution for a small 4x4 scramble", () => {
     const board = scramble(4, 4, [14, 13, 9, 10, 11, 7, 6, 10, 14, 15]);
     const solution = getSolution(board);
 
-    expect(solution.length).toBeGreaterThan(0);
-    expect(isSolved(applyMoves(board, solution))).toBe(true);
+    expect(solution.status).toBe("found");
+    expect(solution.moves.length).toBeGreaterThan(0);
+    expect(isSolved(applyMoves(board, solution.moves))).toBe(true);
   });
 
   it("honors the expansion limit", () => {
     const board = scramble(4, 4, [14, 10, 9]);
 
-    expect(getSolution(board, { maxExpandedNodes: 0 })).toEqual([]);
+    expect(getSolution(board, { maxExpandedNodes: 0 })).toEqual({
+      status: "limit-reached",
+      moves: [],
+    });
   });
 });
 
