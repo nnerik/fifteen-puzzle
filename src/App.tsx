@@ -4,10 +4,10 @@ import {
   createGameState,
   createShuffledBoard,
   createSolvedBoard,
-  getSolution,
   moveTile,
   type GameState
 } from "./game/puzzle";
+import { getSolution } from "./game/solver";
 import { Board } from "./components/Board";
 import { Topbar } from "./components/Topbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
