@@ -15,17 +15,17 @@ export const createSolvedBoard = (width: number, height: number): Board => ({
   height,
   state: [
     width * height - 1,
-    ...Array.from({ length: width * height - 1 }, (_, index) => index)
-  ]
+    ...Array.from({ length: width * height - 1 }, (_, index) => index),
+  ],
 });
 
-export const createGameState = (width = 3, height = 3): GameState => {
+export const createGameState = (width = 4, height = 4): GameState => {
   const board = createSolvedBoard(width, height);
 
   return {
     board,
     previousBoard: board,
-    moves: 0
+    moves: 0,
   };
 };
 
@@ -60,7 +60,7 @@ const permuteEven = (items: number[]): number[] => {
     if (randomOffset > 0) {
       [nextItems[index], nextItems[index + randomOffset]] = [
         nextItems[index + randomOffset] as number,
-        nextItems[index] as number
+        nextItems[index] as number,
       ];
       parity += 1;
     }
@@ -72,7 +72,7 @@ const permuteEven = (items: number[]): number[] => {
 
     [nextItems[penultimate], nextItems[last]] = [
       nextItems[last] as number,
-      nextItems[penultimate] as number
+      nextItems[penultimate] as number,
     ];
   }
 
@@ -84,8 +84,10 @@ export const createShuffledBoard = (width: number, height: number): Board => ({
   height,
   state: [
     width * height - 1,
-    ...permuteEven(Array.from({ length: width * height - 1 }, (_, index) => index))
-  ]
+    ...permuteEven(
+      Array.from({ length: width * height - 1 }, (_, index) => index),
+    ),
+  ],
 });
 
 export const moveTile = (board: Board, tile: number): Board => {
