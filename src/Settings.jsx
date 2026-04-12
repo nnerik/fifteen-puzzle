@@ -1,6 +1,7 @@
 import React from "react";
-import { Paper, IconButton } from "@material-ui/core";
-import { Add, Remove } from "@material-ui/icons";
+import { Paper, IconButton } from "@mui/material";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
 
 export const SettingsPopper = props => {
   return (

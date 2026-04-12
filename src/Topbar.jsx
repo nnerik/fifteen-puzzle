@@ -1,41 +1,24 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
+  Box,
   Toolbar,
   Typography,
   IconButton,
   Popper,
   Slider,
   ClickAwayListener
-} from "@material-ui/core";
-import { Settings } from "@material-ui/icons/";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  title: {
-    flexGrow: 1
-  },
-  settings: {
-    width: 300,
-
-    border: "1px solid",
-    padding: theme.spacing(1),
-    backgroundColor: theme.palette.background.paper
-  }
-}));
+} from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 export const Topbar = props => {
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = event => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  const handleClickAway = event => {
+  const handleClickAway = () => {
     setAnchorEl(null);
   };
 
@@ -51,21 +34,28 @@ export const Topbar = props => {
   const id = open ? "settings" : undefined;
 
   return (
-    <div className={classes.root}>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Moves: {props.gameState.moves}
           </Typography>
           <ClickAwayListener onClickAway={handleClickAway}>
-            <IconButton color="inherit" onClick={handleClick}>
-              <Settings />
+            <IconButton color="inherit" onClick={handleClick} aria-label="settings">
+              <SettingsIcon />
             </IconButton>
           </ClickAwayListener>
         </Toolbar>
       </AppBar>
       <Popper id={id} open={open} anchorEl={anchorEl}>
-        <div className={classes.settings}>
+        <Box
+          sx={theme => ({
+            width: 300,
+            border: "1px solid",
+            p: 1,
+            bgcolor: theme.palette.background.paper
+          })}
+        >
           <Typography gutterBottom>Rows</Typography>
           <Slider
             value={props.gameState.board.height}
@@ -88,8 +78,8 @@ export const Topbar = props => {
             min={2}
             max={6}
           />
-        </div>
+        </Box>
       </Popper>
-    </div>
+    </Box>
   );
 };

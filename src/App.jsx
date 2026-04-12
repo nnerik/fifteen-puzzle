@@ -3,7 +3,7 @@ import "./App.css";
 import { newBoard, solvedBoard, moveTile, getSolution } from "./fifteen";
 import { Board } from "./Board";
 import { Topbar } from "./Topbar";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   CssBaseline,
   Box,
@@ -11,9 +11,9 @@ import {
   ButtonGroup,
   Container,
   Typography
-} from "@material-ui/core";
-import { cyan } from "@material-ui/core/colors";
-import "typeface-russo-one";
+} from "@mui/material";
+import { cyan } from "@mui/material/colors";
+import "@fontsource/russo-one";
 
 const App = () => {
   const [gameState, setGameState] = useState({
@@ -22,14 +22,14 @@ const App = () => {
     moves: 0
   });
 
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
-      type: "dark",
+      mode: "dark",
       primary: cyan,
       secondary: { main: "#fffacd" }
     },
     typography: {
-      fontFamily: ["Russo One", "Sans Serif"]
+      fontFamily: ['"Russo One"', "sans-serif"].join(",")
     }
   });
 
