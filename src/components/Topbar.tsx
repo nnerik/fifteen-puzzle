@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import {
   AppBar,
   Box,
@@ -9,12 +10,23 @@ import {
   Slider,
   ClickAwayListener
 } from "@mui/material";
+import type { SliderProps } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
+import type { GameState } from "../game/puzzle";
 
-export const Topbar = props => {
-  const [anchorEl, setAnchorEl] = useState(null);
+type TopbarProps = {
+  gameState: GameState;
+  resize: (width: number, height: number) => void;
+};
 
-  const handleClick = event => {
+const sliderValue = (
+  value: Parameters<NonNullable<SliderProps["onChange"]>>[1]
+): number => (Array.isArray(value) ? value[0] ?? 0 : value);
+
+export const Topbar = (props: TopbarProps) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
@@ -22,12 +34,12 @@ export const Topbar = props => {
     setAnchorEl(null);
   };
 
-  const handleRows = (_, value) => {
-    props.resize(props.gameState.board.width, value);
+  const handleRows: SliderProps["onChange"] = (_, value) => {
+    props.resize(props.gameState.board.width, sliderValue(value));
   };
 
-  const handleColumns = (_, value) => {
-    props.resize(value, props.gameState.board.height);
+  const handleColumns: SliderProps["onChange"] = (_, value) => {
+    props.resize(sliderValue(value), props.gameState.board.height);
   };
 
   const open = Boolean(anchorEl);
@@ -41,7 +53,11 @@ export const Topbar = props => {
             Moves: {props.gameState.moves}
           </Typography>
           <ClickAwayListener onClickAway={handleClickAway}>
-            <IconButton color="inherit" onClick={handleClick} aria-label="settings">
+            <IconButton
+              color="inherit"
+              onClick={handleClick}
+              aria-label="settings"
+            >
               <SettingsIcon />
             </IconButton>
           </ClickAwayListener>

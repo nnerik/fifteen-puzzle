@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
-import { newBoard, solvedBoard, moveTile, getSolution } from "./fifteen";
-import { Board } from "./Board";
-import { Topbar } from "./Topbar";
+import {
+  createGameState,
+  createShuffledBoard,
+  createSolvedBoard,
+  getSolution,
+  moveTile,
+  type GameState
+} from "./game/puzzle";
+import { Board } from "./components/Board";
+import { Topbar } from "./components/Topbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   CssBaseline,
@@ -16,13 +23,9 @@ import { cyan } from "@mui/material/colors";
 import "@fontsource/russo-one";
 
 const App = () => {
-  const [gameState, setGameState] = useState({
-    board: solvedBoard(3, 3),
-    prevBoard: solvedBoard(3, 3),
-    moves: 0
-  });
+  const [gameState, setGameState] = useState<GameState>(() => createGameState());
 
-  const theme = createTheme({
+  const theme = useMemo(() => createTheme({
     palette: {
       mode: "dark",
       primary: cyan,
@@ -31,38 +34,43 @@ const App = () => {
     typography: {
       fontFamily: ['"Russo One"', "sans-serif"].join(",")
     }
-  });
+  }), []);
 
-  const resize = (width, height) => {
-    const newBoard = solvedBoard(width, height);
-    setGameState({ board: newBoard, prevBoard: newBoard, moves: 0 });
+  const resize = (width: number, height: number) => {
+    const board = createSolvedBoard(width, height);
+    setGameState({ board, previousBoard: board, moves: 0 });
   };
 
-  const move = id => {
+  const move = (tile: number) => {
     setGameState({
-      prevBoard: gameState.board,
-      board: moveTile(gameState.board, id),
+      previousBoard: gameState.board,
+      board: moveTile(gameState.board, tile),
       moves: gameState.moves + 1
     });
   };
 
   const shuffle = () => {
-    const shuffledBoard = newBoard(
+    const shuffledBoard = createShuffledBoard(
       gameState.board.width,
       gameState.board.height
     );
     setGameState({
-      prevBoard: shuffledBoard,
+      previousBoard: shuffledBoard,
       board: shuffledBoard,
       moves: 0
     });
   };
 
-  const solutionReducer = (acc, id) => {
+  const solutionReducer = (acc: GameState[], tile: number) => {
     const prev = acc[acc.length - 1];
+
+    if (prev === undefined) {
+      return acc;
+    }
+
     return acc.concat({
-      prevBoard: prev.board,
-      board: moveTile(prev.board, id),
+      previousBoard: prev.board,
+      board: moveTile(prev.board, tile),
       moves: prev.moves + 1
     });
   };
@@ -81,7 +89,7 @@ const App = () => {
       <CssBaseline />
       <Topbar gameState={gameState} resize={resize} />
       <Container className="App">
-        <Box m={4}>
+        <Box sx={{ m: 4 }}>
           <Typography variant="h2" color="primary">
             Fifteen
           </Typography>
@@ -92,7 +100,7 @@ const App = () => {
           gameState={gameState}
           handler={move}
         />
-        <Box m={4}>
+        <Box sx={{ m: 4 }}>
           <ButtonGroup>
             <Button
               variant="contained"
