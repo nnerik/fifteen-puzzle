@@ -1,6 +1,6 @@
 {
   "short_name": "Fifteen",
-  "name": "Fifteen game using REact",
+  "name": "Fifteen Puzzle",
   "icons": [
     {
       "src": "favicon.ico",
