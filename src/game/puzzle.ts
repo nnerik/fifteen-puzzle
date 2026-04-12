@@ -1,15 +1,28 @@
+/**
+ * Puzzle board using a tile-to-position representation.
+ *
+ * `state[tile]` is the current board position for that tile. Tile `0` is the
+ * blank space, and tile `1` belongs at position `0` in a solved board.
+ */
 export type Board = {
   width: number;
   height: number;
   state: number[];
 };
 
+/**
+ * Runtime game state used by the UI.
+ *
+ * `previousBoard` is retained so tiles can animate from their previous
+ * position after a move.
+ */
 export type GameState = {
   board: Board;
   previousBoard: Board;
   moves: number;
 };
 
+/** Creates a board in solved order for the requested dimensions. */
 export const createSolvedBoard = (width: number, height: number): Board => ({
   width,
   height,
@@ -19,6 +32,7 @@ export const createSolvedBoard = (width: number, height: number): Board => ({
   ],
 });
 
+/** Creates a new solved game state. */
 export const createGameState = (width = 4, height = 4): GameState => {
   const board = createSolvedBoard(width, height);
 
@@ -29,22 +43,28 @@ export const createGameState = (width = 4, height = 4): GameState => {
   };
 };
 
-const distance = (a: number, b: number, width: number): number =>
+/** Returns the Manhattan distance between two board positions. */
+export const getTileDistance = (a: number, b: number, width: number): number =>
   Math.abs(Math.trunc(a / width) - Math.trunc(b / width)) +
   Math.abs((a % width) - (b % width));
 
+/** Returns whether a numbered tile is adjacent to the blank space. */
 export const isMovable = (board: Board, tile: number): boolean =>
-  distance(board.state[tile] ?? 0, board.state[0] ?? 0, board.width) === 1;
+  getTileDistance(board.state[tile] ?? 0, board.state[0] ?? 0, board.width) ===
+  1;
 
-const manhattan = (board: Board): number => {
+/** Returns the total Manhattan distance for all numbered tiles. */
+export const getManhattanDistance = (board: Board): number => {
   const [, ...tiles] = board.state;
 
   return tiles
-    .map((position, index) => distance(position, index, board.width))
+    .map((position, index) => getTileDistance(position, index, board.width))
     .reduce((previous, current) => previous + current, 0);
 };
 
-export const isSolved = (board: Board): boolean => manhattan(board) === 0;
+/** Returns whether every numbered tile is in its goal position. */
+export const isSolved = (board: Board): boolean =>
+  getManhattanDistance(board) === 0;
 
 const permuteEven = (items: number[]): number[] => {
   if (items.length < 3) {
@@ -66,6 +86,8 @@ const permuteEven = (items: number[]): number[] => {
     }
   }
 
+  // Keeping the permutation even guarantees the shuffled board remains
+  // reachable from the solved state for this tile-to-position model.
   if (parity % 2 > 0) {
     const penultimate = nextItems.length - 2;
     const last = nextItems.length - 1;
@@ -79,6 +101,7 @@ const permuteEven = (items: number[]): number[] => {
   return nextItems;
 };
 
+/** Creates a randomized board that is solvable from the solved state. */
 export const createShuffledBoard = (width: number, height: number): Board => ({
   width,
   height,
@@ -90,6 +113,7 @@ export const createShuffledBoard = (width: number, height: number): Board => ({
   ],
 });
 
+/** Moves a tile by swapping it with the blank position. */
 export const moveTile = (board: Board, tile: number): Board => {
   const blankPosition = board.state[0];
   const tilePosition = board.state[tile];

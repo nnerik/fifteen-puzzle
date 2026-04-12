@@ -8,12 +8,17 @@ const applyMoves = (board: Board, moves: number[]): Board =>
 const scramble = (
   width: number,
   height: number,
-  blankPositions: number[]
+  blankPositions: number[],
 ): Board =>
-  blankPositions.reduce((board, blankPosition) => {
-    const tile = board.state.findIndex(position => position === blankPosition);
-    return moveTile(board, tile);
-  }, createSolvedBoard(width, height));
+  blankPositions.reduce(
+    (board, blankPosition) => {
+      const tile = board.state.findIndex(
+        (position) => position === blankPosition,
+      );
+      return moveTile(board, tile);
+    },
+    createSolvedBoard(width, height),
+  );
 
 describe("getSolution", () => {
   it("returns no moves for a solved board", () => {
@@ -54,7 +59,7 @@ describe("heuristic", () => {
     const board: Board = {
       width: 3,
       height: 3,
-      state: [8, 1, 0, 2, 3, 4, 5, 6, 7]
+      state: [8, 1, 0, 2, 3, 4, 5, 6, 7],
     };
 
     expect(heuristic(board)).toBe(4);

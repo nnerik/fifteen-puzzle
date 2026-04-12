@@ -17,6 +17,9 @@ Useful scripts:
 ```sh
 pnpm test
 pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm check
 pnpm build
 pnpm preview
 ```

@@ -5,7 +5,7 @@ import {
   createShuffledBoard,
   createSolvedBoard,
   moveTile,
-  type GameState
+  type GameState,
 } from "./game/puzzle";
 import { getSolution } from "./game/solver";
 import { Board } from "./components/Board";
@@ -17,30 +17,37 @@ import {
   Button,
   ButtonGroup,
   Container,
-  Typography
+  Typography,
 } from "@mui/material";
 import { cyan } from "@mui/material/colors";
 import "@fontsource/russo-one";
 
+/** Main Fifteen Puzzle application shell and game controller. */
 const App = () => {
-  const [gameState, setGameState] = useState<GameState>(() => createGameState());
+  const [gameState, setGameState] = useState<GameState>(() =>
+    createGameState(),
+  );
 
-  const theme = useMemo(() => createTheme({
-    palette: {
-      mode: "dark",
-      primary: {
-        main: cyan[500],
-        contrastText: "#000"
-      },
-      background: {
-        default: "#303030"
-      },
-      secondary: { main: "#fffacd" }
-    },
-    typography: {
-      fontFamily: ['"Russo One"', "sans-serif"].join(",")
-    }
-  }), []);
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: "dark",
+          primary: {
+            main: cyan[500],
+            contrastText: "#000",
+          },
+          background: {
+            default: "#303030",
+          },
+          secondary: { main: "#fffacd" },
+        },
+        typography: {
+          fontFamily: ['"Russo One"', "sans-serif"].join(","),
+        },
+      }),
+    [],
+  );
 
   const resize = (width: number, height: number) => {
     const board = createSolvedBoard(width, height);
@@ -51,19 +58,19 @@ const App = () => {
     setGameState({
       previousBoard: gameState.board,
       board: moveTile(gameState.board, tile),
-      moves: gameState.moves + 1
+      moves: gameState.moves + 1,
     });
   };
 
   const shuffle = () => {
     const shuffledBoard = createShuffledBoard(
       gameState.board.width,
-      gameState.board.height
+      gameState.board.height,
     );
     setGameState({
       previousBoard: shuffledBoard,
       board: shuffledBoard,
-      moves: 0
+      moves: 0,
     });
   };
 
@@ -77,17 +84,23 @@ const App = () => {
     return acc.concat({
       previousBoard: prev.board,
       board: moveTile(prev.board, tile),
-      moves: prev.moves + 1
+      moves: prev.moves + 1,
     });
   };
 
   const solve = () => {
     const solution = getSolution(gameState.board);
-    if (solution.length === 0) alert("No solution found!");
-    else
-      solution.reduce(solutionReducer, [gameState]).forEach((state, index) => {
-        setTimeout(() => setGameState(state), 150 * index);
-      });
+
+    if (solution.length === 0) {
+      alert("No solution found!");
+      return;
+    }
+
+    // Build the intermediate game states first so each timeout displays the
+    // same board sequence even though React state updates are asynchronous.
+    solution.reduce(solutionReducer, [gameState]).forEach((state, index) => {
+      setTimeout(() => setGameState(state), 150 * index);
+    });
   };
 
   return (
@@ -104,7 +117,7 @@ const App = () => {
           tileSize={100}
           frameWidth={4}
           gameState={gameState}
-          handler={move}
+          onMove={move}
         />
         <Box sx={{ m: 4 }}>
           <ButtonGroup>

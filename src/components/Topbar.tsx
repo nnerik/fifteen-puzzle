@@ -8,7 +8,7 @@ import {
   IconButton,
   Popper,
   Slider,
-  ClickAwayListener
+  ClickAwayListener,
 } from "@mui/material";
 import type { SliderProps } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -19,10 +19,12 @@ type TopbarProps = {
   resize: (width: number, height: number) => void;
 };
 
+/** Normalizes Material UI slider values to a single number. */
 const sliderValue = (
-  value: Parameters<NonNullable<SliderProps["onChange"]>>[1]
-): number => (Array.isArray(value) ? value[0] ?? 0 : value);
+  value: Parameters<NonNullable<SliderProps["onChange"]>>[1],
+): number => (Array.isArray(value) ? (value[0] ?? 0) : value);
 
+/** Renders game controls for move count and board dimensions. */
 export const Topbar = (props: TopbarProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -65,11 +67,11 @@ export const Topbar = (props: TopbarProps) => {
       </AppBar>
       <Popper id={id} open={open} anchorEl={anchorEl}>
         <Box
-          sx={theme => ({
+          sx={(theme) => ({
             width: 300,
             border: "1px solid",
             p: 1,
-            bgcolor: theme.palette.background.paper
+            bgcolor: theme.palette.background.paper,
           })}
         >
           <Typography gutterBottom>Rows</Typography>

@@ -16,10 +16,11 @@ type TileProps = {
 type BoardProps = {
   frameWidth: number;
   gameState: GameState;
-  handler: (tile: number) => void;
+  onMove: (tile: number) => void;
   tileSize: number;
 };
 
+/** Returns animation and clickability classes for a tile transition. */
 const tileStateClassName = (props: TileProps): string => {
   if (props.isMovable) {
     if (props.x < props.previousX) return "Clickable Left";
@@ -36,6 +37,7 @@ const tileStateClassName = (props: TileProps): string => {
   return "Still";
 };
 
+/** Renders one numbered tile at its current SVG position. */
 const Tile = (props: TileProps) => {
   if (props.index === 0) {
     return null;
@@ -78,6 +80,7 @@ const Tile = (props: TileProps) => {
   );
 };
 
+/** Renders the puzzle board and delegates movable tile clicks. */
 export const Board = (props: BoardProps) => {
   const boardStroke = props.frameWidth;
   const solved = isSolved(props.gameState.board);
@@ -109,6 +112,8 @@ export const Board = (props: BoardProps) => {
         {props.gameState.board.state.map((tile, index) => {
           const previousTile = props.gameState.previousBoard.state[index] ?? 0;
 
+          // Previous coordinates are passed through so CSS animations can infer
+          // the direction each tile moved without storing a separate move type.
           return (
             <Tile
               key={index}
@@ -120,7 +125,7 @@ export const Board = (props: BoardProps) => {
               index={index}
               isSolved={solved}
               isMovable={!solved && isMovable(props.gameState.board, index)}
-              onMove={props.handler}
+              onMove={props.onMove}
             />
           );
         })}

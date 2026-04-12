@@ -1,4 +1,4 @@
-import { isSolved, moveTile, type Board } from "./puzzle";
+import { getManhattanDistance, isSolved, moveTile, type Board } from "./puzzle";
 
 type SearchNode = {
   board: Board;
@@ -11,14 +11,17 @@ type VisitedNode = {
   from: Board | null;
 };
 
-type SolverOptions = {
+/** Options that tune solver cost and search limits. */
+export type SolverOptions = {
+  /** Maximum search nodes to expand before giving up. */
   maxExpandedNodes?: number;
+  /** Heuristic multiplier; values above 1 trade optimality for speed. */
   weight?: number;
 };
 
 const defaultOptions = {
   maxExpandedNodes: 250_000,
-  weight: 1.5
+  weight: 1.5,
 } satisfies Required<SolverOptions>;
 
 class PriorityQueue {
@@ -103,24 +106,12 @@ class PriorityQueue {
   #swap(a: number, b: number): void {
     [this.#nodes[a], this.#nodes[b]] = [
       this.#nodes[b] as SearchNode,
-      this.#nodes[a] as SearchNode
+      this.#nodes[a] as SearchNode,
     ];
   }
 }
 
 const boardKey = (board: Board): string => board.state.join(",");
-
-const distance = (a: number, b: number, width: number): number =>
-  Math.abs(Math.trunc(a / width) - Math.trunc(b / width)) +
-  Math.abs((a % width) - (b % width));
-
-const manhattan = (board: Board): number => {
-  const [, ...tiles] = board.state;
-
-  return tiles
-    .map((position, index) => distance(position, index, board.width))
-    .reduce((previous, current) => previous + current, 0);
-};
 
 const countConflicts = (goalPositions: number[]): number => {
   let conflicts = 0;
@@ -145,10 +136,14 @@ const countConflicts = (goalPositions: number[]): number => {
 
 const linearConflicts = (board: Board): number => {
   let conflicts = 0;
-  const tilesByPosition = Array.from({ length: board.state.length }, (_, position) =>
-    board.state.findIndex(tilePosition => tilePosition === position)
+  const tilesByPosition = Array.from(
+    { length: board.state.length },
+    (_, position) =>
+      board.state.findIndex((tilePosition) => tilePosition === position),
   );
 
+  // A row conflict means two tiles are already in their goal row but reversed
+  // relative to their goal columns. Resolving it costs at least two moves.
   for (let row = 0; row < board.height; row += 1) {
     const goalColumns: number[] = [];
 
@@ -168,6 +163,7 @@ const linearConflicts = (board: Board): number => {
     conflicts += countConflicts(goalColumns);
   }
 
+  // Column conflicts mirror row conflicts using goal rows instead.
   for (let column = 0; column < board.width; column += 1) {
     const goalRows: number[] = [];
 
@@ -190,8 +186,12 @@ const linearConflicts = (board: Board): number => {
   return conflicts;
 };
 
+/**
+ * Estimates distance to the solved state using Manhattan distance plus linear
+ * conflict penalties.
+ */
 export const heuristic = (board: Board): number =>
-  manhattan(board) + 2 * linearConflicts(board);
+  getManhattanDistance(board) + 2 * linearConflicts(board);
 
 const getNeighbors = (board: Board): Board[] => {
   const blank = board.state[0];
@@ -206,22 +206,24 @@ const getNeighbors = (board: Board): Board[] => {
     blankRow > 0 ? blank - board.width : undefined,
     blankRow < board.height - 1 ? blank + board.width : undefined,
     blankColumn > 0 ? blank - 1 : undefined,
-    blankColumn < board.width - 1 ? blank + 1 : undefined
+    blankColumn < board.width - 1 ? blank + 1 : undefined,
   ];
 
-  return positions.flatMap(position => {
+  return positions.flatMap((position) => {
     if (position === undefined) {
       return [];
     }
 
-    const tile = board.state.findIndex(tilePosition => tilePosition === position);
+    const tile = board.state.findIndex(
+      (tilePosition) => tilePosition === position,
+    );
     return tile > 0 ? [moveTile(board, tile)] : [];
   });
 };
 
 const reconstructPath = (
   goal: Board,
-  visited: Record<string, VisitedNode>
+  visited: Record<string, VisitedNode>,
 ): number[] => {
   const path: number[] = [];
   let board = goal;
@@ -229,7 +231,7 @@ const reconstructPath = (
 
   while (node?.from !== null && node?.from !== undefined) {
     path.unshift(
-      node.from.state.findIndex(position => position === board.state[0])
+      node.from.state.findIndex((position) => position === board.state[0]),
     );
     board = node.from;
     node = visited[boardKey(board)];
@@ -238,9 +240,15 @@ const reconstructPath = (
   return path;
 };
 
+/**
+ * Finds a move sequence that solves the board using weighted A* search.
+ *
+ * Returns an empty array when the board is already solved or the expansion
+ * limit is reached before a solution is found.
+ */
 export const getSolution = (
   start: Board,
-  options: SolverOptions = {}
+  options: SolverOptions = {},
 ): number[] => {
   const maxExpandedNodes =
     options.maxExpandedNodes ?? defaultOptions.maxExpandedNodes;
@@ -249,14 +257,14 @@ export const getSolution = (
   const visited: Record<string, VisitedNode> = {
     [boardKey(start)]: {
       gScore: 0,
-      from: null
-    }
+      from: null,
+    },
   };
 
   queue.push({
     board: start,
     gScore: 0,
-    priority: weight * heuristic(start)
+    priority: weight * heuristic(start),
   });
 
   let expandedNodes = 0;
@@ -271,6 +279,8 @@ export const getSolution = (
     const currentKey = boardKey(current.board);
     const currentVisited = visited[currentKey];
 
+    // A better route to this board may have been queued after this entry. The
+    // visited g-score check discards stale heap entries without needing delete.
     if (
       currentVisited === undefined ||
       current.gScore !== currentVisited.gScore
@@ -295,12 +305,12 @@ export const getSolution = (
 
       visited[neighborKey] = {
         gScore,
-        from: current.board
+        from: current.board,
       };
       queue.push({
         board: neighbor,
         gScore,
-        priority: gScore + weight * heuristic(neighbor)
+        priority: gScore + weight * heuristic(neighbor),
       });
     }
   }

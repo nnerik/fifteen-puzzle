@@ -5,6 +5,6 @@ export default defineConfig({
   base: "/fifteen-puzzle/",
   plugins: [react()],
   test: {
-    environment: "jsdom"
-  }
+    environment: "jsdom",
+  },
 });
