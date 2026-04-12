@@ -28,7 +28,13 @@ const App = () => {
   const theme = useMemo(() => createTheme({
     palette: {
       mode: "dark",
-      primary: cyan,
+      primary: {
+        main: cyan[500],
+        contrastText: "#000"
+      },
+      background: {
+        default: "#303030"
+      },
       secondary: { main: "#fffacd" }
     },
     typography: {

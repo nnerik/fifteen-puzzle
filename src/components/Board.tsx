@@ -67,7 +67,7 @@ const Tile = (props: TileProps) => {
         <text
           className="TileText"
           textAnchor="middle"
-          alignmentBaseline="central"
+          dominantBaseline="middle"
           x={150}
           y={150}
         >
